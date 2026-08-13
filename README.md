@@ -1,33 +1,92 @@
 Project Overview
-This project is a complete retail management web application built using ASP.NET Core MVC. It successfully demonstrates the real-world integration of all four Azure Storage services: Tables, Blob Storage, Queues, and Files.
+ABC Retail is a web application designed to demonstrate the integration of the four core Azure Storage services. It allows users to manage products and customers, upload images securely, process orders asynchronously using queues, and store persistent logs in the cloud.
 
-The application allows users to manage products and customers, upload and display images securely, process orders asynchronously using queues, and maintain a persistent cloud-based log file.
+2. The Four Azure Services Used
+Azure Table Storage (For Structured Data)
+Used to store customer profiles and product details. Data is saved in two tables: Customers and Products.
 
-Core Application Features
-Product Management:
-The application provides full Create, Read, Update, and Delete functionality for products. Each product stores information such as the product name, category, price, description, and a link to its associated image stored in Azure.
+Azure Blob Storage (For Images)
+Used to host product images. Images are stored in a private container named retailmedia. To keep the container secure while allowing users to view images, the application generates temporary security tokens for each image.
 
-Customer Management:
-Administrators can register new customers, view a complete list of all registered customers, and remove customers from the system if necessary.
+Azure Queue Storage (For Background Tasks)
+Used to handle order and inventory processing in the background. When a user places an order, a message is sent to a queue. The user sees an immediate success message, while the actual processing happens later.
 
-Asynchronous Order Processing:
-When a customer clicks the "Queue Order" button on any product, the application does not process the order immediately. Instead, it sends a lightweight data message to an Azure Queue. This allows the user interface to respond instantly, while the actual processing happens in the background.
+Azure File Share (For Persistent Logs)
+Used to store application log files. Every order placed appends a new entry to a text file stored in the cloud. These logs can be viewed directly from a page on the website.
 
-Secure Image Hosting:
-All product images are stored in a private Azure Blob Storage container. To ensure security, the application dynamically generates temporary secure access tokens for each image. This allows the images to be viewed on the website without making the entire storage container publicly accessible.
+3. Application Features
+Product Management
+Users can add, view, edit, and delete products. Each product stores a name, category, price, description, and an associated image.
 
-Cloud-Based Application Logging:
-Every time an order is placed, the application writes a detailed log entry directly to a text file stored in an Azure File Share. The website includes a dedicated page that reads this log file and displays it to the administrator in real time.
+Customer Management
+Admins can register new customers, view a full list of existing customers, and remove customers when necessary.
 
-The Four Azure Storage Services Used
-Azure Table Storage
-This service is used to store structured data. The application uses two tables: one for storing customer records and another for storing product details. Data is stored and retrieved in a highly scalable NoSQL format.
+Secure Image Gallery
+The Blob Manager page allows users to upload images, view them in a gallery, download them, or delete them permanently.
 
-Azure Blob Storage
-This service is used for storing large, unstructured data, specifically product images. All images are kept in a private container to restrict public access, and images are served securely using temporary access tokens.
+Order Processing
+The Product Catalog includes a "Queue Order" button. Clicking this button sends the order to an Azure Queue for background processing, keeping the user interface fast and responsive.
 
-Azure Queue Storage
-This service is used to handle asynchronous background tasks. When an order is placed, a message is sent to an order processing queue. The queue stores these messages until a background worker retrieves them. This separates the fast user interface from slower, heavier background work.
+Live Log Viewer
+A dedicated View Logs page fetches the contents of the cloud log file and displays it on the screen for easy system monitoring.
 
-Azure File Share
-This service acts as a fully managed cloud-based network file share. The application writes log entries to a text file stored in this file share, ensuring that application logs are stored persistently in the cloud and are accessible from anywhere.
+4. How the System Flows
+A typical user interaction follows this simple path:
+
+An admin adds a new product and uploads an image.
+
+The image goes to Blob Storage, and the product details go to Table Storage.
+
+A customer visits the product catalog and clicks "Queue Order".
+
+The system sends a message to the Azure Queue and shows a success message to the user.
+
+The system writes a log entry to the Azure File Share.
+
+The admin can view the new log entry on the View Logs page.
+
+This setup keeps the main website fast while the cloud handles the heavy work in the background.
+
+5. Testing Confirmation
+The application was tested manually and confirmed working for all required features:
+
+Images upload successfully to Azure Blob Storage.
+
+Products save correctly to Azure Table Storage.
+
+Order messages appear in the Azure Queue.
+
+Log entries write successfully to the Azure File Share.
+
+Users can download and delete files from the interface.
+
+6. Required Screenshots for Submission
+The following screenshots have been collected to verify the project:
+
+From Azure Portal:
+
+General overview of the Storage Account.
+
+The Customers and Products tables.
+
+The retailmedia blob container.
+
+The order-processing queue.
+
+The application-logs file share.
+
+The connection strings (access keys).
+
+From the Running Application:
+
+The Blob Manager page with the upload form.
+
+An uploaded image displayed in the gallery.
+
+The Product Catalog showing items from the database.
+
+The green success message after placing a queue order.
+
+The View Logs page showing text pulled from Azure.
+
+A screenshot of the Azure Portal showing an active message in the order queue.
