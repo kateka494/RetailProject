@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Application Logs";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
+            <h4 class="fw-bold"><i class="fas fa-file-alt me-2" style="color: #2E4A8A;"></i> Application Logs (Azure Files)</h4>
+        </div>
+        <div class="card-body p-4">
+            <pre class="bg-light p-3 rounded-3 border" style="white-space: pre-wrap; font-family: 'Courier New', monospace; max-height: 500px; overflow-y: auto;">@ViewBag.LogContent</pre>
+        </div>
+    </div>
+</div>

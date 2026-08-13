@@ -1,0 +1,131 @@
+﻿@using System.IO  
+@model List<RetailProject.Services.BlobInfo>
+@{
+    ViewData["Title"] = "Image Manager";
+}
+
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 rounded-4 shadow-sm text-white" style="background: linear-gradient(135deg, #1E2A47 0%, #2E4A8A 100%);">
+                <h2 class="fw-bold"><i class="fas fa-images me-2"></i> Azure Blob Manager</h2>
+                <p class="opacity-85 mb-0">Upload, download, or delete images stored in your <code>retailmedia</code> container.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
+                    <h5 class="fw-bold"><i class="fas fa-cloud-upload-alt me-2" style="color: #2E4A8A;"></i> Upload New Image</h5>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <form asp-action="Upload" asp-controller="Image" method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label for="file" class="form-label fw-semibold text-muted small text-uppercase">Select Image File</label>
+                            <input type="file" name="file" id="file" class="form-control" accept="image/*" required />
+                        </div>
+                        <div class="col-md-5">
+                            <label for="productId" class="form-label fw-semibold text-muted small text-uppercase">Product ID / Folder</label>
+                            <input type="text" name="productId" id="productId" class="form-control" placeholder="e.g. product-123" value="general" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-dark w-100 py-2 fw-semibold">
+                                <i class="fas fa-upload me-2"></i> Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display & Manage Images Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold"><i class="fas fa-th-large me-2" style="color: #2E4A8A;"></i> Stored Images (@Model.Count)</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        <div class="row g-4">
+                            @foreach (var blob in Model)
+                            {
+                                <div class="col-md-4 col-6">
+                                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                                        <div class="ratio ratio-4x3 bg-light">
+                                            <img src="@blob.Url" class="img-fluid" style="object-fit: cover;" alt="@blob.Name" />
+                                        </div>
+                                        <div class="card-body p-3 bg-white">
+                                            <div class="d-flex flex-column gap-2">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="small text-muted text-truncate" style="max-width: 65%;" title="@blob.Name">
+                                                        <i class="far fa-file-image me-1"></i> @blob.Name.Substring(blob.Name.LastIndexOf('/') + 1)
+                                                    </span>
+
+                                                    <span class="badge bg-light text-dark rounded-pill small">
+                                                        @{
+                                                            var sizeInKb = blob.Size / 1024.0;
+                                                            var sizeInMb = sizeInKb / 1024.0;
+                                                        }
+                                                        @(sizeInKb > 1024 ? $"{sizeInMb:F1} MB" : $"{sizeInKb:F0} KB")
+                                                    </span>
+                                                </div>
+                                                <div class="d-flex gap-2 mt-1">
+                                                    <!-- Download Button -->
+                                                    <a asp-action="Download" asp-controller="Image" asp-route-blobName="@blob.Name" class="btn btn-sm btn-outline-success flex-grow-1 rounded-pill">
+                                                        <i class="fas fa-download me-1"></i> Download
+                                                    </a>
+                                                    <!-- Delete Button -->
+                                                    <form asp-action="Delete" asp-controller="Image" method="post" onsubmit="return confirm('Are you sure you want to permanently delete this image?');">
+                                                        <input type="hidden" name="blobName" value="@blob.Name" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">
+                                                        Uploaded: @blob.CreatedOn?.ToString("dd MMM yyyy HH:mm")
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-image fa-4x mb-3 text-light" style="color: #e9ecef !important;"></i>
+                            <p class="text-muted mb-0">No images found in the <code>retailmedia</code> container yet.</p>
+                            <p class="text-muted small">Use the upload form above to add your first image.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ratio-4x3 {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+        }
+</style>
